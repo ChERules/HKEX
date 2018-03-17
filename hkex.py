@@ -1,32 +1,46 @@
 import os
+import datetime
 import myfunctions as mf
-# MAIN Function starts
-fst = input('Enter starting date as "yymmdd" : ')
-lst = input('Enter the last date as "yymmdd" : ')
 
-fst = fst + "111111"
-fst = fst[:6]
-lst = lst + "111111"
-lst = lst[:6]
+# MAIN Function starts
+now = datetime.datetime.now()
+lst = str(now.year)[-2:]+('00'+str(now.month))[-2:]+('00'+str(now.day))[-2:]
+
 wdir = os.getcwd()
 hdir = wdir + '/HTML/'
 ddir = wdir + '/Data/'
 
+if not os.path.exists(hdir): os.mkdir(hdir)
+if not os.path.exists(ddir): os.mkdir(ddir)
+
 os.chdir(hdir)
-datelist = []
-for file in os.listdir():
-	datelist.append(file[:6])
+datelist = mf.extlist(hdir, '.html', 'N')
+
+fst = '170701'
+if os.path.isfile('env.txt'):
+	f = open('env.txt', 'r')
+	for line in f:
+		if line.startswith('lastdate'):
+			fst = line[9:15]
+			break
+	f.close()
+else:
+	datelist.sort()
+	fst = datelist[len(datelist)-1]
 
 while fst <= lst:
 
 	if not fst in datelist:
 		url = "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d"+fst+"e.htm"
-		print("Processing", fst)
 		fname = fst + '.html'
 		if mf.url_is_alive(url):
+			print('Downloading : ', fname)
 			mf.dnload(url, fname)
 			finfo = os.stat(fname)
-			if finfo.st_size < 1024: os.remove(fname)
+			if finfo.st_size < 1024:
+				os.remove(fname)
+			else:
+				lastdate = fst
 
 	yy = int(fst[:2])
 	mm = int(fst[2:4])
@@ -41,6 +55,10 @@ while fst <= lst:
 
 	fst = str('00'+str(yy))[-2:]+("00" + str(mm))[-2:]+("00" + str(dd))[-2:]
 
+f = open('env.txt','w')
+f.write('lastdate:'+lastdate+'\n')
+f.close()
+
 os.chdir(ddir)
 #
 # READ WHAT HAS BEEN DONE PREVIOUSLY TO AVOID REPEATING PAST EFFORTS
@@ -49,11 +67,8 @@ os.chdir(ddir)
 hfiles = mf.extlist(hdir, '.html', 'Y')
 hfiles.sort()
 
-# retrive a list of files in dataset director
-dfiles = mf.extlist(ddir, '.csv', 'Y')
-
 # create a company database if it is not in the data directory already
-if not 'company.csv' in dfiles: mf.crcof()
+if not os.path.isfile('company.csv'): mf.crcof()
 
 # create a list of company already in the company.csv file
 clist = []
@@ -66,7 +81,7 @@ cfile.close()
 
 # list of trading date which result had been read previously and delete previous sessions file
 dlist = dict()
-if 'sessions.csv' in dfiles:
+if os.path.isfile('sessions.csv'):
 	sfile = open('sessions.csv', 'r')
 	for line in sfile:
 		if line.startswith('date'): continue
@@ -75,7 +90,7 @@ if 'sessions.csv' in dfiles:
 	sfile.close()
 	os.remove('sessions.csv')
 
-if not "quotations.csv" in dfiles:
+if not os.path.isfile("quotations.csv"):
 	fout = open('quotations.csv', 'w')
 	fout.write('code,date,tdn,high,low,close,ask,bid,turnover,volume\n')
 	fout.close()
@@ -100,6 +115,7 @@ for file in hfiles:
 		sfile.write(date+','+idx+','+dlist[date]+'\n')
 		continue
 	else:
+		print('Processing : ', file)
 		tdn = mf.read_h(hdir+file, clist)
 	sfile.write(date+','+idx+','+tdn+'\n')
 
