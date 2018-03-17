@@ -120,3 +120,41 @@ for file in hfiles:
 	sfile.write(date+','+idx+','+tdn+'\n')
 
 sfile.close()
+
+cinfo = dict()
+cfile = open('company.csv', 'r')
+for line in cfile:
+	if line.startswith('code'):
+		continue
+	else:
+		c = line.split(',')
+		cinfo[c[0]] = c[1]+' ('+c[2]+')'
+cfile.close()
+
+code = '0'
+while not code == 'q':
+	print('\nWhat is the stock code of the company you want me to extract? ')
+	code = input('Enter code or q to quite: ')
+	if code == 'q':
+		continue
+	elif code in cinfo:
+		print('\nCompany with code: ', code, ' is ', cinfo[code])
+		ans = input('Is it correct? (y/n): ')
+		if ans == 'y':
+			if os.path.isfile(code+'.csv'): os.remove(code+'.csv')
+			qr = open('quotations.csv', 'r')
+			ou = open(code+'.csv', 'w')
+			for line in qr:
+				t1 = line.split(',')
+				if t1[0] == code or t1[0] == 'code':
+					ou.write(line)
+			ou.close()
+			qr.close()
+			t = input('\nDONE, Do you want me to prepare data for another company? (y/n): ')
+			if t == 'n': code = 'q'
+		else:
+			print("\nLet's try again.\n")
+	else:
+		print('\nSorry, code is not in my record. Please try again.')
+
+print('\nThe data you need should be in located in ', ddir)
