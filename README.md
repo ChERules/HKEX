@@ -16,9 +16,3 @@ Future work:
 Considering to read the csv file with R and .....
 
 Remarks:  
-I have an earlier version that reads the webpage and converts the data directly into
-individual file which represents each individual stock.  The project works however it
-took a long time for windows to run, could be due to a lot of file handlings.  Linux
-handles the same script better even on older machine.  It also generated a large number
-of small files.  So I switched to save the webpage preserving the raw data before
-extracting the data to save them in one csv file.
