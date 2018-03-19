@@ -32,46 +32,46 @@ datelist = mf.extlist(hdir, '.html', 'N')
 fst = '170701'
 # the last date of webpage which was downloaded
 if os.path.isfile('env.txt'):
-	f = open('env.txt', 'r')
-	for line in f:
-		if line.startswith('lastdate'):
-			fst = line[9:15]
-			break
-	f.close()
+    f = open('env.txt', 'r')
+    for line in f:
+        if line.startswith('lastdate'):
+            fst = line[9:15]
+            break
+    f.close()
 else:
-	datelist.sort()
-	fst = datelist[len(datelist)-1]
+    datelist.sort()
+    fst = datelist[len(datelist)-1]
 
 # try to download webpages between the last day and today
 while fst <= lst:
-	# skip over if we already have the webpage downloaded
-	if not fst in datelist:
-		# prepare the URL for the date
-		url = "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d"+fst+"e.htm"
-		fname = fst + '.html'
-		# download the page if it exists
-		if mf.url_is_alive(url):
-			print('Downloading : ', fname)
-			mf.dnload(url, fname)
-			finfo = os.stat(fname)
-			# delete teh downloaded file it is too small to contain data (a holiday)
-			if finfo.st_size < 1024:
-				os.remove(fname)
-			else:
-				lastdate = fst
+    # skip over if we already have the webpage downloaded
+    if not fst in datelist:
+        # prepare the URL for the date
+        url = "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d"+fst+"e.htm"
+        fname = fst + '.html'
+        # download the page if it exists
+        if mf.url_is_alive(url):
+            print('Downloading : ', fname)
+            mf.dnload(url, fname)
+            finfo = os.stat(fname)
+            # delete the downloaded file which is too small to contain data
+            if finfo.st_size < 1024:
+                os.remove(fname)
+            else:
+                lastdate = fst
 
-	# setup the next date to try
-	yy = int(fst[:2])
-	mm = int(fst[2:4])
-	dd = int(fst[4:])
-	dd = dd + 1
-	if dd > 31:
-		mm = mm + 1
-		dd = 1
-	if mm > 12:
-		yy = yy + 1
-		mm = 1
-	fst = str('00'+str(yy))[-2:]+("00" + str(mm))[-2:]+("00" + str(dd))[-2:]
+    # setup the next date to try
+    yy = int(fst[:2])
+    mm = int(fst[2:4])
+    dd = int(fst[4:])
+    dd = dd + 1
+    if dd > 31:
+        mm = mm + 1
+        dd = 1
+    if mm > 12:
+        yy = yy + 1
+        mm = 1
+    fst = str('00'+str(yy))[-2:]+("00" + str(mm))[-2:]+("00" + str(dd))[-2:]
 
 # record the last date which webpage was downloaded
 f = open('env.txt','w')
@@ -95,27 +95,27 @@ if not os.path.isfile('company.csv'): mf.crcof()
 clist = []
 cfile = open('company.csv', 'r')
 for line in cfile:
-	if line.startswith('code'): continue
-	co = line.split(',')
-	clist.append(co[0])
+    if line.startswith('code'): continue
+    co = line.split(',')
+    clist.append(co[0])
 cfile.close()
 
-# list of trading date which result had been read previously and delete the file
+# list of trading date which result had been read previously
 dlist = dict()
 if os.path.isfile('sessions.csv'):
-	sfile = open('sessions.csv', 'r')
-	for line in sfile:
-		if line.startswith('date'): continue
-		sn = line.split(',')
-		dlist[line[0]] = line[2].strip()
-	sfile.close()
-	os.remove('sessions.csv')
+    sfile = open('sessions.csv', 'r')
+    for line in sfile:
+        if line.startswith('date'): continue
+        sn = line.split(',')
+        dlist[line[0]] = line[2].strip()
+    sfile.close()
+    os.remove('sessions.csv')
 
 # create the quotations.csv file if doesn't exists
 if not os.path.isfile("quotations.csv"):
-	fout = open('quotations.csv', 'w')
-	fout.write('code,date,tdn,high,low,close,ask,bid,turnover,volume\n')
-	fout.close()
+    fout = open('quotations.csv', 'w')
+    fout.write('code,date,tdn,high,low,close,ask,bid,turnover,volume\n')
+    fout.close()
 
 # create a new sessions file for this session.
 sfile = open('sessions.csv', 'w')
@@ -123,20 +123,20 @@ sfile.write('date,idx,tdnum\n')
 
 # loop throught all the downloaded webpages
 for file in hfiles:
-	# extrat the date and its order among all webpages
-	date = file[:6]
-	idx = str(hfiles.index(file))
+    # extrat the date and its order among all webpages
+    date = file[:6]
+    idx = str(hfiles.index(file))
 
-	# if page already been read previously, record it and preceed to next downloaded page.
-	if date in dlist:
-		sfile.write(date+','+idx+','+dlist[date]+'\n')
-		continue
-	else:
-		# extract the data and add it to the "quotations.csv"
-		print('Processing : ', file)
-		tdn = mf.read_h(hdir+file, clist)
-	# record the files has been processed before move on to next one
-	sfile.write(date+','+idx+','+tdn+'\n')
+    # if page already been read previously, record it and preceed to next page.
+    if date in dlist:
+        sfile.write(date+','+idx+','+dlist[date]+'\n')
+        continue
+    else:
+        # extract the data and add it to the "quotations.csv"
+        print('Processing : ', file)
+        tdn = mf.read_h(hdir+file, clist)
+    # record the files has been processed before move on to next one
+    sfile.write(date+','+idx+','+tdn+'\n')
 
 sfile.close()
 
@@ -147,41 +147,41 @@ sfile.close()
 cinfo = dict()
 cfile = open('company.csv', 'r')
 for line in cfile:
-	if line.startswith('code'):
-		continue
-	else:
-		c = line.split(',')
-		cinfo[c[0]] = c[1]+' ('+c[2]+')'
+    if line.startswith('code'):
+        continue
+    else:
+        c = line.split(',')
+        cinfo[c[0]] = c[1]+' ('+c[2]+')'
 cfile.close()
 
 # ask user the stock code of all the companies they are inteested in
 code = '0'
 while not code == 'q':
-	print('\nWhat is the stock code of the company you want me to extract? ')
-	code = input('Enter code or q to quite: ')
-	# exit if answer is 'q'
-	if code == 'q':
-		continue
-	# confirm with user and extract the data if code is in database
-	elif code in cinfo:
-		print('\nCompany with code: ', code, ' is ', cinfo[code])
-		ans = input('Is it correct? (y/n): ')
-		if ans == 'y':
-			if os.path.isfile(code+'.csv'): os.remove(code+'.csv')
-			qr = open('quotations.csv', 'r')
-			ou = open(code+'.csv', 'w')
-			for line in qr:
-				t1 = line.split(',')
-				if t1[0] == code or t1[0] == 'code':
-					ou.write(line)
-			ou.close()
-			qr.close()
-			t = input('\nDONE, Do you want me to prepare data for another company? (y/n): ')
-			if t == 'n': code = 'q'
-		else:
-			print("\nLet's try again.\n")
-	# ask for another code if it is not on record
-	else:
-		print('\nSorry, code is not in my record. Please try again.')
+    print('\nWhat is the stock code of the company you want me to extract? ')
+    code = input('Enter code or q to quite: ')
+    # exit if answer is 'q'
+    if code == 'q':
+        continue
+    # confirm with user and extract the data if code is in database
+    elif code in cinfo:
+        print('\nCompany with code: ', code, ' is ', cinfo[code])
+        ans = input('Is it correct? (y/n): ')
+        if ans == 'y':
+            if os.path.isfile(code+'.csv'): os.remove(code+'.csv')
+            qr = open('quotations.csv', 'r')
+            ou = open(code+'.csv', 'w')
+            for line in qr:
+                t1 = line.split(',')
+                if t1[0] == code or t1[0] == 'code':
+                    ou.write(line)
+            ou.close()
+            qr.close()
+            t = input('\nDONE, Do you want me to prepare data for another company? (y/n): ')
+            if t == 'n': code = 'q'
+        else:
+            print("\nLet's try again.\n")
+    # ask for another code if it is not on record
+    else:
+        print('\nSorry, code is not in my record. Please try again.')
 # inform user where to expect the data file is located
 print('\nThe data you need should be in located in ', ddir)
