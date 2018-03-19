@@ -41,6 +41,7 @@ if os.path.isfile('env.txt'):
 else:
     datelist.sort()
     fst = datelist[len(datelist)-1]
+lastdate = lst
 
 # try to download webpages between the last day and today
 while fst <= lst:
@@ -107,7 +108,7 @@ if os.path.isfile('sessions.csv'):
     for line in sfile:
         if line.startswith('date'): continue
         sn = line.split(',')
-        dlist[line[0]] = line[2].strip()
+        dlist[sn[0]] = sn[2].strip()
     sfile.close()
     os.remove('sessions.csv')
 
