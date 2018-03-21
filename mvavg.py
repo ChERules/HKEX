@@ -31,12 +31,7 @@ ouf.write(l)
 t = []
 for l in inf:
     t = l.split(',')
-    t.pop(9)
-    t.pop(8)
-    t.pop(7)
-    t.pop(6)
-    t.pop(0)
-    l = t[0]+',' +t[1]+',' +t[2]+',' +t[3]+',' +t[4]+'\n'
+    l = '{},{},{},{},{}\n'.format(t[1],t[2],t[3],t[4],t[5])
     ouf.write(l)
 inf.close()
 ouf.close()
@@ -46,7 +41,8 @@ while mvd < 50:
     inf = open(inp, 'r')
     l = inf.readline()	# read header
     ouf = open(oup, 'w')
-    l = l.strip() + ',mavgh'+str(mvd) + ',mavgl'+str(mvd) + ',mavgc'+str(mvd)+'\n'
+    smvd = str(mvd)
+    l = l.strip() + ',mavgh'+smvd + ',mavgl'+smvd + ',mavgc'+smvd+'\n'
     ouf.write(l)	# write header
 
     valh = []
@@ -72,7 +68,7 @@ while mvd < 50:
         avgl = avg(vall)
         avgc = avg(valc)
 
-        l = l.strip() + ',' + str(avgh) + ',' + str(avgl) + ',' + str(avgc) + '\n'
+        l = l.strip() + ',{0:.3f},{1:.3f},{2:.3f}\n'.format(avgh,avgl,avgc)
         ouf.write(l)
         valh.pop(0)
         vall.pop(0)
