@@ -1,5 +1,5 @@
 import os
-import urllib.request
+import urllib
 
 def crcof():
     # create a company profile csv file
@@ -123,28 +123,31 @@ def read_h(html, co):
                 qout.write(csvout)
     return(senum)
 
-def llsq(points):
+def llsq(x,y):
     # Perform lineer least square fittinog over the data points
     # return a list with slope and y-intercept if successful
     # return 'fail' if determinant = 0
     # points : a list of coordinates of data points
-    n = len(points)
+    n = len(x)
     sumx = 0.0
+    sumy = 0.0
     sumxx = 0.0
     sumxy = 0.0
 
     # calculate the various sums from the data set
-    for data in points:
-        sumx = sumx + data[0]
-        sumy = sumy + data[1]
-        sumxx = sumxx + data[0]**2
-        sumxy = sumxy + data[0]*data[1]
+    count = 0
+    while count < n:
+        sumx = sumx + x[count]
+        sumy = sumy + y[count]
+        sumxx = sumxx + x[count]**2
+        sumxy = sumxy + x[count]*y[count]
+        count = count + 1
 
         # calculate the coeffient of the fitted line in the form of y = a + bx
-        detern = n * sumxx - sumx**2
-        if detern == 0:
-            return('fail')
-        else:
-            slop = (sumy * sumxx - sumx * sumxy)/d
-            yintc = (n * sumxy - sumx * sumy)/d
-            return(slop,yintc)
+    detern = n * sumxx - sumx**2
+    if detern == 0:
+        return('failed')
+    else:
+        yintc = (sumy * sumxx - sumx * sumxy)/detern
+        slop = (n * sumxy - sumx * sumy)/detern
+        return(slop,yintc)
