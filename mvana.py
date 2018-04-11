@@ -20,7 +20,7 @@ mv2 = l.strip().split(',')
 
 for l in inf:
     mv3 = l.strip().split(',')
-    ct = len(mv2) - 5 // 3
+    ct = (len(mv2) - 5) // 3
     lo = ''
     rn = 0
     rt = (float(mv3[4]) - float(mv2[4]))

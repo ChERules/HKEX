@@ -1,5 +1,5 @@
 import os
-import urllib
+import urllib.request
 
 def crcof():
     # create a company profile csv file
