@@ -1,6 +1,24 @@
 import os
 import urllib.request
 
+def csv(code):
+    if os.path.isfile(code+'.csv'): os.remove(code+'.csv')
+    qr = open('quotations.csv', 'r')
+    ou = open(code+'.csv', 'w')
+    for line in qr:
+        t1 = line.split(',')
+        if t1[0] == code or t1[0] == 'code':
+            ou.write(line)
+    ou.close()
+    qr.close()
+
+def avg(v):
+    sum = 0.0
+    for i in v:
+        sum = sum + i
+    avg = sum/len(v)
+    return(avg)
+
 def crcof():
     # create a company profile csv file
     fout = open('company.csv','w')
@@ -25,10 +43,13 @@ def extlist(path, ext, w):
             flist.append(file)
     return(flist)
 
-def url_is_alive(site):
-    # check HTML's header to make sure the URL is valid
-
-    request = urllib.request.Request(site)
+def url_is_alive(url):
+    """
+    Checks that a given URL is reachable.
+    :param url: A URL
+    :rtype: bool
+    """
+    request = urllib.request.Request(url)
     request.get_method = lambda: 'HEAD'
 
     try:
@@ -116,10 +137,12 @@ def read_h(html, co):
                 bid = q[4]
                 low = q[5]
                 tunovr = q[6]
-                csvout = code + ',' + td + ',' + senum+','
-                csvout = csvout + high + ',' + low + ',' + close + ','
-                csvout = csvout + ask + ',' + bid + ',' + tunovr + ','
-                csvout = csvout + traded + '\n'
+                #csvval = (code,td,senum,high,low,close,ask,bid,tunovr,traded)
+                csvout = "{},{},{},{},{},{},{},{},{},{}\n".format(code,td,senum,high,low,close,ask,bid,tunovr,traded)
+                #csvout = code + ',' + td + ',' + senum+','
+                #csvout = csvout + high + ',' + low + ',' + close + ','
+                #csvout = csvout + ask + ',' + bid + ',' + tunovr + ','
+                #csvout = csvout + traded + '\n'
                 qout.write(csvout)
     return(senum)
 

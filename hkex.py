@@ -5,13 +5,14 @@
 import os
 import datetime
 import myfunctions as mf
+import movingAverage as ma
 
 # MAIN Function starts
 
 #
 # DOWNLOADING DAILY QUOTATION WEBPAGES FROM HONG KONG STOCK EXCHANGE
 #
-# create a string of today's date
+# create a string of today's date yymmdd
 now = datetime.datetime.now()
 lst = str(now.year)[-2:]+('00'+str(now.month))[-2:]+('00'+str(now.day))[-2:]
 
@@ -19,6 +20,7 @@ lst = str(now.year)[-2:]+('00'+str(now.month))[-2:]+('00'+str(now.day))[-2:]
 wdir = os.getcwd()
 hdir = wdir + '/HTML/'
 ddir = wdir + '/Data/'
+adir = wdir + '/Analysis/'
 
 if not os.path.exists(hdir): os.mkdir(hdir)
 if not os.path.exists(ddir): os.mkdir(ddir)
@@ -28,7 +30,7 @@ os.chdir(hdir)
 datelist = mf.extlist(hdir, '.html', 'N')
 
 # set up the first date which we search for its quotation webpages
-#n set teh date to 2017-07-01 if we haven't download any before.
+# set the date to 2017-07-01 if we haven't download any yet.
 fst = '170701'
 # the last date of webpage which was downloaded
 if os.path.isfile('env.txt'):
@@ -38,9 +40,10 @@ if os.path.isfile('env.txt'):
             fst = line[9:15]
             break
     f.close()
-else:
+elif len(datelist) >= 1:
     datelist.sort()
     fst = datelist[len(datelist)-1]
+
 lastdate = lst
 
 # try to download webpages between the last day and today
@@ -81,7 +84,7 @@ f.close()
 
 #
 # EXTRACT THE SUMMARY OF THE DAILY ACTIVITY FROM EACH DOWNLOADED WEBPAGE
-# OF EACH STOCK AND SAVE IT IN A "quotations.csv"
+# OF EACH STOCK AND SAVE IT IN "quotations.csv"
 #
 os.chdir(ddir)
 # READ WHAT HAS BEEN DONE PREVIOUSLY TO AVOID REPEATITION
@@ -124,7 +127,8 @@ sfile.write('date,idx,tdnum\n')
 
 # loop throught all the downloaded webpages
 for file in hfiles:
-    # extrat the date and its order among all webpages
+    # extract the date and its order among all webpages
+    # hfiles already sorted previously
     date = file[:6]
     idx = str(hfiles.index(file))
 
@@ -136,13 +140,13 @@ for file in hfiles:
         # extract the data and add it to the "quotations.csv"
         print('Processing : ', file)
         tdn = mf.read_h(hdir+file, clist)
-    # record the files has been processed before move on to next one
-    sfile.write(date+','+idx+','+tdn+'\n')
+        # record the files has been processed before move on to next one
+        sfile.write(date+','+idx+','+tdn+'\n')
 
 sfile.close()
 
 #
-#  EXACT DATA OF COMPANY OF INTEREST AND SAVE IT IN A CSV FILE
+#  EXACT DATA OF COMPANY OF INTEREST AND SAVE IT IN AN INDIVIDUAL CSV FILE
 #
 # gather a list of company which we have data on file
 cinfo = dict()
@@ -156,6 +160,7 @@ for line in cfile:
 cfile.close()
 
 # ask user the stock code of all the companies they are inteested in
+colist = []
 code = '0'
 while not code == 'q':
     print('\nWhat is the stock code of the company you want me to extract? ')
@@ -168,21 +173,21 @@ while not code == 'q':
         print('\nCompany with code: ', code, ' is ', cinfo[code])
         ans = input('Is it correct? (y/n): ')
         if ans == 'y':
-            if os.path.isfile(code+'.csv'): os.remove(code+'.csv')
-            qr = open('quotations.csv', 'r')
-            ou = open(code+'.csv', 'w')
-            for line in qr:
-                t1 = line.split(',')
-                if t1[0] == code or t1[0] == 'code':
-                    ou.write(line)
-            ou.close()
-            qr.close()
-            t = input('\nDONE, Do you want me to prepare data for another company? (y/n): ')
+            colist.append(code)
+            t = input('\nDo you want me to prepare data for another company? (y/n): ')
             if t == 'n': code = 'q'
         else:
             print("\nLet's try again.\n")
     # ask for another code if it is not on record
     else:
         print('\nSorry, code is not in my record. Please try again.')
+
+# SETTING UP Enviroments
+if not os.path.exists(adir): os.mkdir(adir)
+
+for code in colist:
+    mf.csv(code)
+    ma.mvavg(code,ddir,adir)
+
 # inform user where to expect the data file is located
 print('\nThe data you need should be in located in ', ddir)

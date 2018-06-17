@@ -4,6 +4,7 @@
 # assume conditions
 
 import os
+import time
 import myfunctions as mf
 
 dph = './Data/'
@@ -90,4 +91,5 @@ while mvd < 50:
     inf.close()
     mvd = mvd + 5
     os.remove(inp)
+    time.sleep(0.25)
     os.rename(oup, inp)
