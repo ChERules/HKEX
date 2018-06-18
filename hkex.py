@@ -6,6 +6,7 @@ import os
 import datetime
 import myfunctions as mf
 import movingAverage as ma
+import linearLeastSquare as lsq
 
 # MAIN Function starts
 
@@ -188,6 +189,7 @@ if not os.path.exists(adir): os.mkdir(adir)
 for code in colist:
     mf.csv(code)
     ma.mvavg(code,ddir,adir)
+    lsq.llsq(code,ddir,adir)
 
 # inform user where to expect the data file is located
 print('\nThe data you need should be in located in ', ddir)
