@@ -11,7 +11,8 @@ def mvavg(cc,ddir,adir):
     #
     # Set to calulate the moving average starting with 5 days data and wihh
     # increment of 5 days till the tartget maxium date average is reached.
-    mvd = 5     # lower limits of moving data points
+    malow = 5
+    mvd = malow # lower limits of moving data points
     maup = 50   # upper limit of moving average datapoints
     inc = 5     # increment
 
@@ -34,7 +35,6 @@ def mvavg(cc,ddir,adir):
     inf.close()
     ouf.close()
 
-
     while mvd < maup:
         inf = open(inp, 'r')
         l = inf.readline()	# read header
@@ -47,35 +47,45 @@ def mvavg(cc,ddir,adir):
         vall = []
         valc = []
         c = 0
+        normal = True
         while c < (mvd - 1):
             l = inf.readline()
-            ouf.write(l)
-            t = l.split(',')
-            valh.append(float(t[2]))
-            vall.append(float(t[3]))
-            valc.append(float(t[4]))
-            c = c + 1
+            if len(l) > 1:
+                ouf.write(l)
+                t = l.split(',')
+                valh.append(float(t[2]))
+                vall.append(float(t[3]))
+                valc.append(float(t[4]))
+                c = c + 1
+            else:
+                normal = False
+                break
 
-        for l in inf:
-            t = l.split(',')
-            valh.append(float(t[2]))
-            vall.append(float(t[3]))
-            valc.append(float(t[4]))
-
-            avgh = mf.avg(valh)
-            avgl = mf.avg(vall)
-            avgc = mf.avg(valc)
-
-            l = l.strip() + ',{0:.3f},{1:.3f},{2:.3f}\n'.format(avgh,avgl,avgc)
-            ouf.write(l)
-            valh.pop(0)
-            vall.pop(0)
-            valc.pop(0)
-        ouf.close()
-        inf.close()
-        mvd = mvd + inc
-        os.remove(inp)
-        os.rename(oup, inp)
+        if normal:
+            for l in inf:
+                t = l.split(',')
+                valh.append(float(t[2]))
+                vall.append(float(t[3]))
+                valc.append(float(t[4]))
+                avgh = mf.avg(valh)
+                avgl = mf.avg(vall)
+                avgc = mf.avg(valc)
+                l = l.strip() + ',{0:.3f},{1:.3f},{2:.3f}\n'.format(avgh,avgl,avgc)
+                ouf.write(l)
+                valh.pop(0)
+                vall.pop(0)
+                valc.pop(0)
+            ouf.close()
+            inf.close()
+            mvd = mvd + inc
+            os.remove(inp)
+            while os.path.isfile(inp): continue
+            os.rename(oup, inp)
+        else:
+            maup = mvd
+            ouf.close()
+            inf.close()
+            os.remove(oup)
     #
     #   EVALUATE AND ANALIZING THE CALCULATED MOVING AVERAGE
     #
