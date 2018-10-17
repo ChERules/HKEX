@@ -6,15 +6,15 @@
 import os
 import myfunctions as mf
 
-def mvavg(cc,ddir,adir):
+def mvavg(cc,ddir,adir,range):
     #   CALCUOLATING MOVING AVERAGES
     #
     # Set to calulate the moving average starting with 5 days data and wihh
     # increment of 5 days till the tartget maxium date average is reached.
-    malow = 5
+    malow = range['lower']
     mvd = malow # lower limits of moving data points
-    maup = 50   # upper limit of moving average datapoints
-    inc = 5     # increment
+    maup = range['upper']   # upper limit of moving average datapoints
+    inc = range['skip']     # increment
 
     din = ddir + cc + '.csv'
     inp = adir + cc + 'mvg.csv'

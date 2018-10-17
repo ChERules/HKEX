@@ -22,6 +22,8 @@ wdir = os.getcwd()
 hdir = wdir + '/HTML/'
 ddir = wdir + '/Data/'
 adir = wdir + '/Analysis/'
+# setup lower, upper and increament for moving average and linear least linearLeastSquare
+range = {'lower':5,'upper':50,'skip':5} # lower, upper and inc
 
 if not os.path.exists(hdir): os.mkdir(hdir)
 if not os.path.exists(ddir): os.mkdir(ddir)
@@ -188,8 +190,8 @@ if not os.path.exists(adir): os.mkdir(adir)
 
 for code in colist:
     mf.csv(code)
-    ma.mvavg(code,ddir,adir)
+    ma.mvavg(code,ddir,adir,range)
     lsq.llsq(code,ddir,adir)
 
 # inform user where to expect the data file is located
-print('\nThe data you need should be in located in ', ddir)
+print('\nThe data you need should be in located in ', adir)
