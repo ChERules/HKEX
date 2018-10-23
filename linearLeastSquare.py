@@ -8,7 +8,7 @@ import myfunctions as mf
 
 
 
-def llsq(cc,dph,aph):
+def llsq(cc,dph,aph,range):
     # cc = input('Enter the company code you want to calculate the moving average: ')
     # cc = cc.strip()
     #
@@ -29,9 +29,9 @@ def llsq(cc,dph,aph):
     inf.close()
     ouf.close()
 
-    mvd = 5     # number of data point at start fitting
-    inc = 5     # increment of number of data points
-    lmt = 50    # maximum of data points to be used
+    mvd = range['lower']    # number of data point at start fitting
+    inc = range['skip']     # increment of number of data points
+    lmt = range['upper']    # maximum of data points to be used
 
     while mvd < lmt:
         # populate list of x value wiht last date as 100

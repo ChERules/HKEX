@@ -191,7 +191,7 @@ if not os.path.exists(adir): os.mkdir(adir)
 for code in colist:
     mf.csv(code)
     ma.mvavg(code,ddir,adir,range)
-    lsq.llsq(code,ddir,adir)
+    lsq.llsq(code,ddir,adir,range)
 
 # inform user where to expect the data file is located
 print('\nThe data you need should be in located in ', adir)
