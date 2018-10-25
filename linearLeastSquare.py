@@ -62,7 +62,8 @@ def llsq(cc,dph,aph,range):
             valc.append(float(t[4]))
             c = c + 1
 
-        # start the iteration by adding the last date's data to the list to calculate the least square fitting of the data set
+        # start the iteration by adding the last date's data to the list to calculate
+        # the least square fitting of the data set
         for l in inf:
             t = l.split(',')
             valh.append(float(t[2]))
