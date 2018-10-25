@@ -9,8 +9,7 @@ import myfunctions as mf
 
 
 def llsq(cc,dph,aph,range):
-    # cc = input('Enter the company code you want to calculate the moving average: ')
-    # cc = cc.strip()
+    #   cc: company code
     #
     din = dph + cc + '.csv'
     inp = aph + cc + 'llsq.csv'
@@ -74,9 +73,9 @@ def llsq(cc,dph,aph,range):
             lhigh = []
             llow = []
             lclose = []
-            lhigh = mf.llsq(x,valh)
-            llow = mf.llsq(x,vall)
-            lclose = mf.llsq(x,valc)
+            lhigh = mf.llsqfit(x,valh)
+            llow = mf.llsqfit(x,vall)
+            lclose = mf.llsqfit(x,valc)
             llsqh = '{0[0]:.3f}/{0[1]:.3f}'.format(lhigh)
             llsql = '{0[0]:.3f}/{0[1]:.3f}'.format(llow)
             llsqc = '{0[0]:.3f}/{0[1]:.3f}'.format(lclose)

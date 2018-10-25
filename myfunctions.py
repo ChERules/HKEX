@@ -2,6 +2,10 @@ import os
 import urllib.request
 
 def csv(code):
+    """
+    extract trade data of a company, code, from the master file
+    quotations.csv and copy them to the file code.csv
+    """
     if os.path.isfile(code+'.csv'): os.remove(code+'.csv')
     qr = open('quotations.csv', 'r')
     ou = open(code+'.csv', 'w')
@@ -13,6 +17,9 @@ def csv(code):
     qr.close()
 
 def avg(v):
+    """
+    calculate the avage of the value in list v
+    """
     sum = 0.0
     for i in v:
         sum = sum + i
@@ -26,10 +33,12 @@ def crcof():
     fout.close()
 
 def extlist(path, ext, w):
-    # create a list of files in path with extention ext
-    # path : str of path to search
-    # ext : str of extention of files to be search
-    # w : if 'Y', returen a list file names with extention
+    """
+    create a list of files in path with extention ext
+    path : str of path to search
+    ext : str of extention of files to be search
+    w : if 'Y', returen a list of file names with extention
+    """
     flist = []
     pos = len(ext)
     for file in os.listdir(path):
@@ -46,8 +55,7 @@ def extlist(path, ext, w):
 def url_is_alive(url):
     """
     Checks that a given URL is reachable.
-    :param url: A URL
-    :rtype: bool
+    param url: A URL
     """
     request = urllib.request.Request(url)
     request.get_method = lambda: 'HEAD'
@@ -137,20 +145,17 @@ def read_h(html, co):
                 bid = q[4]
                 low = q[5]
                 tunovr = q[6]
-                #csvval = (code,td,senum,high,low,close,ask,bid,tunovr,traded)
                 csvout = "{},{},{},{},{},{},{},{},{},{}\n".format(code,td,senum,high,low,close,ask,bid,tunovr,traded)
-                #csvout = code + ',' + td + ',' + senum+','
-                #csvout = csvout + high + ',' + low + ',' + close + ','
-                #csvout = csvout + ask + ',' + bid + ',' + tunovr + ','
-                #csvout = csvout + traded + '\n'
                 qout.write(csvout)
     return(senum)
 
-def llsq(x,y):
-    # Perform lineer least square fittinog over the data points
-    # return a list with slope and y-intercept if successful
-    # return 'fail' if determinant = 0
-    # points : a list of coordinates of data points
+def llsqfit(x,y):
+    """
+    Perform lineer least square fittinog over the data points
+    return a list with slope and y-intercept if successful
+    return 'fail' if determinant = 0
+    points : a list of coordinates of data points
+    """
     n = len(x)
     sumx = 0.0
     sumy = 0.0
