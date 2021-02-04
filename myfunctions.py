@@ -1,5 +1,6 @@
 import os
-import urllib.request
+import urllib.request, urllib.parse, urllib.error
+import re
 
 def csv(code):
     """
@@ -57,23 +58,41 @@ def url_is_alive(url):
     Checks that a given URL is reachable.
     param url: A URL
     """
-    request = urllib.request.Request(url)
-    request.get_method = lambda: 'HEAD'
-
     try:
-        urllib.request.urlopen(request)
-        return True
-    except urllib.request.HTTPError:
+        urllib.request.urlopen(url)
+    except urllib.error.HTTPError as e:
         return False
+    return True
 
-def dnload(site, fname):
-    f, headers = urllib.request.urlretrieve(site)
-    qpage = open(f)
-    g = open(fname, 'w')
-    for line in qpage:
-        g.write(line)
-    g.close()
-    qpage.close()
+def dnload(site, fname, tname):
+# Read the "site" and write it out to "fname"
+# to preserve the original html file
+# then strip of all html tag and conver '& sequences'
+# save the text to a text file "tname" for easy reading
+    hl = urllib.request.urlopen(site)
+#    if len(fname) < 1:
+#        fname = site.split('/')[-1].split('.')[0]+'.html'
+    fout = open(fname, 'w')
+#    if len(tname) < 1:
+#        tname = fname
+#        name = tname.split('.')
+#        tname = name[0]+'.txt'
+    tout = open(tname, 'w')
+    for line in hl:
+        ln = line.decode()
+        fout.write(ln)
+        ln = re.sub('<.+>?', '', ln).rstrip()
+        if len(ln) < 1 : continue
+        schr = re.findall('&.+;', ln)
+        if len(schr) > 0 :
+            for ch in schr:
+                if ch == '&amp;': ln = re.sub(ch, '&', ln)
+                elif ch == '&quot;': ln = re.sub(ch, '"', ln)
+                elif ch == '&lt;': ln = re.sub(ch, '<', ln)
+                elif ch == '&gt;': ln = re.sub(ch, '>', ln)
+        tout.write(ln+'\n')
+    tout.close()
+    fout.close()
 
 def read_line(t):
     r = []

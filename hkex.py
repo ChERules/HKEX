@@ -56,10 +56,11 @@ while fst <= lst:
         # prepare the URL for the date
         url = "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d"+fst+"e.htm"
         fname = fst + '.html'
+        tname = fst + '.txt'
         # download the page if it exists
         if mf.url_is_alive(url):
             print('Downloading : ', fname)
-            mf.dnload(url, fname)
+            mf.dnload(url, fname, tname)
             finfo = os.stat(fname)
             # delete the downloaded file which is too small to contain data
             if finfo.st_size < 1024:
