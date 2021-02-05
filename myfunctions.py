@@ -89,14 +89,14 @@ def dnload(site, fname, tname):
     fout.close()
     html2txt(fname, tname)
 
-def html2txt(html,txt)
+def html2txt(html,txt):
 # strip all html tags and convert '& sequences'
 # save the text to a text file "tname" for easy reading
     h = open(html,'r')
     t = open(txt,'w')
     for l in h:
         ln = l.rstrip()
-        If len(ln) > 0:
+        if len(ln) > 0:
             ln = re.sub('<.+>?', '', ln)
             if len(ln) < 1 : continue
             schr = re.findall('&.+;', ln)
