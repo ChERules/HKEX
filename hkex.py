@@ -1,3 +1,4 @@
+
 # Project hkex.py
 # support file: myfunctions.py
 # by: Albert Lam <albert@lamfamily.hk>
@@ -13,7 +14,7 @@ import linearLeastSquare as lsq
 #
 # DOWNLOADING DAILY QUOTATION WEBPAGES FROM HONG KONG STOCK EXCHANGE
 #
-# create a string of today's date yymmdd
+# create a string of today's date yymmdd format
 now = datetime.datetime.now()
 lst = str(now.year)[-2:]+('00'+str(now.month))[-2:]+('00'+str(now.day))[-2:]
 
@@ -22,19 +23,17 @@ wdir = os.getcwd()
 hdir = wdir + '/HTML/'
 ddir = wdir + '/Data/'
 adir = wdir + '/Analysis/'
-# setup lower, upper and increament for moving average and linear least linearLeastSquare
-range = {'lower':5,'upper':50,'skip':5} # lower, upper and inc
-
 if not os.path.exists(hdir): os.mkdir(hdir)
 if not os.path.exists(ddir): os.mkdir(ddir)
 
-# get a list of dates which webpage already been downloaded
+# Set up the starting date for the quotation wegpage download.
+# 1. look for the last downloaded file date in env.text
+# 2. check the list of html files already downloaded to determine the last day.
+# 3. As a last resort set date to "190430" seems webpage before May 2019 is no
+#    longer available.
+fst = '190430'
 os.chdir(hdir)
-datelist = mf.extlist(hdir, '.html', 'N')
 
-# set up the first date which we search for its quotation webpages
-# set the date to 2017-07-01 if we haven't download any yet.
-fst = '170701'
 # the last date of webpage which was downloaded
 if os.path.isfile('env.txt'):
     f = open('env.txt', 'r')
@@ -43,43 +42,35 @@ if os.path.isfile('env.txt'):
             fst = line[9:15]
             break
     f.close()
-elif len(datelist) >= 1:
-    datelist.sort()
-    fst = datelist[len(datelist)-1]
-
-lastdate = lst
+else:
+    # retrun a list of filename without extention
+    datelist = mf.extlist(hdir, '.html', 'N')
+    if len(datelist) >= 1:
+        datelist.sort()
+        fst = datelist[len(datelist)-1]
+# lastdate: the date which the webpage was successfully downloaded.
+lastdate = fst
 
 # try to download webpages between the last day and today
-while fst <= lst:
-    # skip over if we already have the webpage downloaded
-    if not fst in datelist:
-        # prepare the URL for the date
-        url = "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d"+fst+"e.htm"
-        fname = fst + '.html'
-        tname = fst + '.txt'
-        # download the page if it exists
-        if mf.url_is_alive(url):
-            print('Downloading : ', fname)
-            mf.dnload(url, fname, tname)
-            finfo = os.stat(fname)
-            # delete the downloaded file which is too small to contain data
-            if finfo.st_size < 1024:
-                os.remove(fname)
-            else:
-                lastdate = fst
+while fst < lst:
 
-    # setup the next date to try
-    yy = int(fst[:2])
-    mm = int(fst[2:4])
-    dd = int(fst[4:])
-    dd = dd + 1
-    if dd > 31:
-        mm = mm + 1
-        dd = 1
-    if mm > 12:
-        yy = yy + 1
-        mm = 1
-    fst = str('00'+str(yy))[-2:]+("00" + str(mm))[-2:]+("00" + str(dd))[-2:]
+    fst = mf.nextday(fst)
+
+    url = "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d"+fst+"e.htm"
+    fname = fst + '.html'
+    tname = fst + '.txt'
+    # download the page if it exists
+    if mf.url_is_alive(url):
+        print('Downloading : ', fname)
+        mf.dnload(url, fname, tname)
+
+        # delete the downloaded file which is too small to contain data
+        finfo = os.stat(fname)
+        if finfo.st_size < 1024:
+            os.remove(fname)
+            os.remove(tname)
+        else:
+            lastdate = fst
 
 # record the last date which webpage was downloaded
 f = open('env.txt','w')
@@ -152,6 +143,8 @@ sfile.close()
 #
 #  EXACT DATA OF COMPANY OF INTEREST AND SAVE IT IN AN INDIVIDUAL CSV FILE
 #
+# setup lower, upper and increament for moving average and linear least linearLeastSquare
+range = {'lower':5,'upper':50,'skip':5} # lower, upper and inc
 # gather a list of company which we have data on file
 cinfo = dict()
 cfile = open('company.csv', 'r')

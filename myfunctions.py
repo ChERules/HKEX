@@ -2,6 +2,21 @@ import os
 import urllib.request, urllib.parse, urllib.error
 import re
 
+def nextday(dt):
+    # setup the next date to try
+    yy = int(dt[:2])
+    mm = int(dt[2:4])
+    dd = int(dt[4:])
+    dd = dd + 1
+    if dd > 31:
+        mm = mm + 1
+        dd = 1
+    if mm > 12:
+        yy = yy + 1
+        mm = 1
+    nd = str('00'+str(yy))[-2:]+("00" + str(mm))[-2:]+("00" + str(dd))[-2:]
+    return(nd)
+
 def csv(code):
     """
     extract trade data of a company, code, from the master file
@@ -67,32 +82,33 @@ def url_is_alive(url):
 def dnload(site, fname, tname):
 # Read the "site" and write it out to "fname"
 # to preserve the original html file
-# then strip of all html tag and conver '& sequences'
-# save the text to a text file "tname" for easy reading
-    hl = urllib.request.urlopen(site)
-#    if len(fname) < 1:
-#        fname = site.split('/')[-1].split('.')[0]+'.html'
+# Then call html2txt to strip down the html tags.
+    hl = urllib.request.urlopen(site).read().decode()
     fout = open(fname, 'w')
-#    if len(tname) < 1:
-#        tname = fname
-#        name = tname.split('.')
-#        tname = name[0]+'.txt'
-    tout = open(tname, 'w')
-    for line in hl:
-        ln = line.decode()
-        fout.write(ln)
-        ln = re.sub('<.+>?', '', ln).rstrip()
-        if len(ln) < 1 : continue
-        schr = re.findall('&.+;', ln)
-        if len(schr) > 0 :
-            for ch in schr:
-                if ch == '&amp;': ln = re.sub(ch, '&', ln)
-                elif ch == '&quot;': ln = re.sub(ch, '"', ln)
-                elif ch == '&lt;': ln = re.sub(ch, '<', ln)
-                elif ch == '&gt;': ln = re.sub(ch, '>', ln)
-        tout.write(ln+'\n')
-    tout.close()
+    fout.write(hl)
     fout.close()
+    html2txt(fname, tname)
+
+def html2txt(html,txt)
+# strip all html tags and convert '& sequences'
+# save the text to a text file "tname" for easy reading
+    h = open(html,'r')
+    t = open(txt,'w')
+    for l in h:
+        ln = l.rstrip()
+        If len(ln) > 0:
+            ln = re.sub('<.+>?', '', ln)
+            if len(ln) < 1 : continue
+            schr = re.findall('&.+;', ln)
+            if len(schr) > 0 :
+                for ch in schr:
+                    if ch == '&amp;': ln = re.sub(ch, '&', ln)
+                    elif ch == '&quot;': ln = re.sub(ch, '"', ln)
+                    elif ch == '&lt;': ln = re.sub(ch, '<', ln)
+                    elif ch == '&gt;': ln = re.sub(ch, '>', ln)
+        t.write(ln+'\n')
+    t.close()
+    h.close()
 
 def read_line(t):
     r = []
