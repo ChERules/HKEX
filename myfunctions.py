@@ -97,7 +97,7 @@ def html2txt(html,txt):
     for l in h:
         ln = l.rstrip()
         if len(ln) > 0:
-            ln = re.sub('<.+>?', '', ln)
+            ln = re.sub('<.+?>', '', ln)
             if len(ln) < 1 : continue
             schr = re.findall('&.+;', ln)
             if len(schr) > 0 :
