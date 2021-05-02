@@ -13,6 +13,6 @@ hkex.py is the main script that will control the download and data extraction.
 myfunctions.py contains all functions for the project.  
 
 __Future work:__
-Considering to read the *csv* file with *R* and .....
+currently working on storing extracted data in sqlite3.
 
 Remarks:  
