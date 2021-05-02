@@ -112,12 +112,6 @@ def html2txt(html,txt):
 
 def read_line(t):
     r = []
-    if t.find('&amp;') > -1:
-        t = t.replace('&amp;', '&')
-    if t.find("</font></pre><pre><font size='1'>") > -1:
-        t = t.replace("</font></pre><pre><font size='1'>", "")
-    if t.find('/') > -1:
-        t = t.replace('/', ' ')
     r.append(t[1:6].strip())
     r.append(t[7:23].strip())
     r.append(t[24:27].strip())
@@ -127,10 +121,10 @@ def read_line(t):
     r.append(t[55:].strip().replace(',', ''))
     return(r)
 
-def read_h(html, co):
-    td = html[-11:-5]
+def read_h(filename, co):
+    td = filename[-10:-4]
     out = 'quotations.csv'
-    qpage = open(html, 'r')
+    qpage = open(filename, 'r')
 
     st = 's'
 
@@ -145,12 +139,8 @@ def read_h(html, co):
                 qout = open(out, 'a')
                 st = 'h'
         # locate the beginning of the quotation section
-        elif st.startswith('h'):
-            if line.find('<a name = "quotations">QUOTATIONS</a>') > -1:
-                st = 'h1'
-            elif line.find('CODE') and st == 'h1':
-                st = 'h2'
-            elif line.find('CLOSING') and st == 'h2':
+        elif st == 'h':
+            if line.find('CLOSING      BID     LOW        TURNOVER ($)') > -1:
                 st = 'q'
         # read the first line of each quotation
         elif st == 'q':
