@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[3]:
+
 
 # Project hkex.py
 # support file: myfunctions.py
@@ -21,6 +26,10 @@ ddir = wdir + '/Data/'
 adir = wdir + '/Analysis/'
 if not os.path.exists(hdir): os.mkdir(hdir)
 if not os.path.exists(ddir): os.mkdir(ddir)
+
+
+# In[4]:
+
 
 ########## DOWNLOAD WEBPAGE
 #
@@ -47,8 +56,8 @@ if os.path.isfile('env.txt'):
             break
     f.close()
 else:
-    # return a list of names of all txt files without the extention
-    datelist = mf.extlist(hdir, '.txt', 'N')
+    # return a list of names of downloaded html files without extention
+    datelist = mf.extlist(hdir, '.html', 'N')
     # extract the latest from all filename
     if len(datelist) > 1:
         datelist.sort()
@@ -56,21 +65,19 @@ else:
 lastdate = fst
 
 # Download the web page for next and consquence date from HKEX if they exist.
-# convert it into text file; Delete the files that is too small to contain
-# useful data; update lastdate after each successful download
+# Delete the files that is too small to contain useful data; update lastdate
+# after each successful download
 while fst < lst:
     # advance fst to nextday and setup the URL and filenames
     fst = mf.nextday(fst)
     url = "https://www.hkex.com.hk/eng/stat/smstat/dayquot/d"+fst+"e.htm"
     if mf.url_is_alive(url):
         fname = fst + '.html'
-        tname = fst + '.txt'
         print('Downloading : ', fname)
-        mf.dnload(url, fname, tname)
+        mf.dnload(url, fname)
         finfo = os.stat(fname)
         if finfo.st_size < 1024:
             os.remove(fname)
-            os.remove(tname)
         else:
             lastdate = fst
 
@@ -79,9 +86,13 @@ f = open('env.txt','w')
 f.write('lastdate:'+lastdate+'\n')
 f.close()
 
-######### EXGTRACT DATA FROM TEXT FILES
+
+# In[5]:
+
+
+######### EXGTRACT DATA FROM HTML FILES
 #
-# EXTRACT THE SUMMARY OF THE DAILY ACTIVITY FROM EACH TEXTFILES
+# EXTRACT THE SUMMARY OF THE DAILY ACTIVITY FROM EACH HTMLFILES
 # Save the information in "quotations.csv"
 #
 os.chdir(ddir)
@@ -94,12 +105,11 @@ if not os.path.isfile("quotations.csv"):
     fout.close()
 
 # READ WHAT HAS BEEN DONE PREVIOUSLY TO AVOID REPEATITION
-# retrive a list of all text files with extention in HTML directory
+# retrive a list of all html files with extention in HTML directory
 # and sort them
-textfiles = mf.extlist(hdir, '.txt', 'Y')
-# remove('env.txt') before the sorting; should improve sorting efficiency
-textfiles.remove('env.txt')
-textfiles.sort()
+htmlfiles = mf.extlist(hdir, '.html', 'Y')
+htmlfiles.sort()
+
 # create a list of company already in the company.csv file
 comlist = []
 comfile = open('company.csv', 'r')
@@ -126,11 +136,11 @@ sfile = open('sessions.csv', 'w')
 sfile.write('date,idx,tdnum\n')
 
 # loop throught all the downloaded webpages
-for file in textfiles:
+for file in htmlfiles:
     # extract the date and its order among all webpages
-    # textfiles already sorted previously
+    # htmlfiles already been sorted previously
     date = file[:6]
-    idx = str(textfiles.index(file))
+    idx = str(htmlfiles.index(file))
 
     # if page already been read previously, record it and preceed to next page.
     if date in dlist:
@@ -143,6 +153,10 @@ for file in textfiles:
         sfile.write(date+','+idx+','+tdn+'\n')
 
 sfile.close()
+
+
+# In[6]:
+
 
 #
 #  EXACT DATA OF COMPANY OF INTEREST AND SAVE IT IN AN INDIVIDUAL CSV FILE
@@ -191,3 +205,10 @@ for code in colist:
 
 # inform user where to expect the data file is located
 print('\nThe data you need should be in located in ', adir)
+
+
+# In[ ]:
+
+
+
+

@@ -79,7 +79,7 @@ def url_is_alive(url):
         return False
     return True
 
-def dnload(site, fname, tname):
+def dnload(site, fname):
 # Read the "site" and write it out to "fname"
 # to preserve the original html file
 # Then call html2txt to strip down the html tags.
@@ -87,7 +87,20 @@ def dnload(site, fname, tname):
     fout = open(fname, 'w')
     fout.write(hl)
     fout.close()
-    html2txt(fname, tname)
+
+def striptag(l):
+    ln = l.rstrip()
+    if len(ln) > 0:
+        ln = re.sub('<.+?>', '', ln)
+        if len(ln) > 0:
+            schr = re.findall('&.+;', ln)
+            if len(schr) > 0:
+                for ch in schr:
+                    if ch == '&amp;': ln = re.sub(ch, '&', ln)
+                    elif ch == '&quot;': ln = re.sub(ch, '"', ln)
+                    elif ch == '&lt;': ln = re.sub(ch, '<', ln)
+                    elif ch == '&gt;': ln = re.sub(ch, '>', ln)
+    return(ln)
 
 def html2txt(html,txt):
 # strip all html tags and convert '& sequences'
@@ -97,15 +110,7 @@ def html2txt(html,txt):
     for l in h:
         ln = l.rstrip()
         if len(ln) > 0:
-            ln = re.sub('<.+?>', '', ln)
-            if len(ln) < 1 : continue
-            schr = re.findall('&.+;', ln)
-            if len(schr) > 0 :
-                for ch in schr:
-                    if ch == '&amp;': ln = re.sub(ch, '&', ln)
-                    elif ch == '&quot;': ln = re.sub(ch, '"', ln)
-                    elif ch == '&lt;': ln = re.sub(ch, '<', ln)
-                    elif ch == '&gt;': ln = re.sub(ch, '>', ln)
+            ln = striptag(l)
         t.write(ln+'\n')
     t.close()
     h.close()
@@ -122,7 +127,7 @@ def read_line(t):
     return(r)
 
 def read_h(filename, co):
-    td = filename[-10:-4]
+    td = filename[-11:-5]
     out = 'quotations.csv'
     qpage = open(filename, 'r')
 
@@ -130,7 +135,9 @@ def read_h(filename, co):
 
     for line in qpage:
         if line.strip() == '': continue
-        # search the session number and date
+        # strip html tags and convert escape sequence
+        line = striptag(line)
+        # search and extract the session number for the year
         if st == 's':
             if line.find(td) > -1:
                 line = "00" + line
@@ -150,7 +157,6 @@ def read_h(filename, co):
                 st = 'd'
                 break
             q = read_line(line)
-            #print(q[0])
             if len(q[0]) > 0:
                 code = q[0]
                 name = q[1]
