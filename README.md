@@ -1,21 +1,39 @@
 # HKEX
 
 __The Project:__
-The program perfroms the following to the daily quotation web pages which is made available
-by Hong Kong Stock Exchange to the pubic via its website.
+The program will download the daily quotation web pages which is made available
+by Hong Kong Stock Exchange to the pubic via its website. Then the daily
+summary of each listing will be extracted and be stored in a CSV (comma separated
+value) file.
 
-1. Download the daily quotation webpage  
-2. Extract summary of the day's performance of all stocks traded on the day  
-3. Collect the data of any particular company of interest into a *csv* file  
+There is another project ex2db project which will do the same task but the data
+will be stored in a SQL Lite database. (Coming soon)
+
+1. Download the daily quotation webpage.
+2. Extract summary of the day's performance of all stocks traded on the day and
+   stored them in a CSV file.
+3. Collect the data of any particular company of interest into a separate CSV
+   file.
 
 __The scripts:__
 hkex.py is the main script that will control the download and data extraction.  
 myfunctions.py contains all functions for the project.  
 
 __Future work:__
-Considering to read the *csv* file with *R* and .....
+No plan for the project at present time.
 
 Remarks:
+__2021-05-09__
+Decided to make the storing data in SQL database development of the project into
+a different project "ex2db" which should appear shortly.  myfunctions.py has
+been cleaned up to retain only the functions required for this project.  The
+code for this project will be frozen for now except for bug fixes.  I will
+work on the ex2db project for now.
+
+Keeping hkex as is instead of moving it to a SQL database project, I imagine
+the value of CSV files especially for the ease of reading it into other tools or
+by other program.
+
 __2021-05-03__
 The downloaded html files take up a lot of space, most of the space for this
 project. Converting them to text file and storing them together double the

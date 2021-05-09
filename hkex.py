@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[3]:
-
-
 # Project hkex.py
 # support file: myfunctions.py
 # by: Albert Lam <albert@lamfamily.hk>
@@ -26,10 +20,6 @@ ddir = wdir + '/Data/'
 adir = wdir + '/Analysis/'
 if not os.path.exists(hdir): os.mkdir(hdir)
 if not os.path.exists(ddir): os.mkdir(ddir)
-
-
-# In[4]:
-
 
 ########## DOWNLOAD WEBPAGE
 #
@@ -85,10 +75,6 @@ while fst < lst:
 f = open('env.txt','w')
 f.write('lastdate:'+lastdate+'\n')
 f.close()
-
-
-# In[5]:
-
 
 ######### EXGTRACT DATA FROM HTML FILES
 #
@@ -154,11 +140,6 @@ for file in htmlfiles:
 
 sfile.close()
 
-
-# In[6]:
-
-
-#
 #  EXACT DATA OF COMPANY OF INTEREST AND SAVE IT IN AN INDIVIDUAL CSV FILE
 #
 # setup lower, upper and increament for moving average and linear least linearLeastSquare
@@ -204,11 +185,4 @@ for code in colist:
     lsq.llsq(code,ddir,adir,range)
 
 # inform user where to expect the data file is located
-print('\nThe data you need should be in located in ', adir)
-
-
-# In[ ]:
-
-
-
-
+print('\nThe results are located in ', ddir, ' and ', adir)

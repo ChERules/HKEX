@@ -102,19 +102,6 @@ def striptag(l):
                     elif ch == '&gt;': ln = re.sub(ch, '>', ln)
     return(ln)
 
-def html2txt(html,txt):
-# strip all html tags and convert '& sequences'
-# save the text to a text file "tname" for easy reading
-    h = open(html,'r')
-    t = open(txt,'w')
-    for l in h:
-        ln = l.rstrip()
-        if len(ln) > 0:
-            ln = striptag(l)
-        t.write(ln+'\n')
-    t.close()
-    h.close()
-
 def read_line(t):
     r = []
     r.append(t[1:6].strip())
